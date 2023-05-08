@@ -6,7 +6,7 @@
     box-sizing: border-box;
 }
 html{
-    background-image: url('naruto.gif');
+    background-image: url('naruto-slowed.gif');
     background-repeat: no-repeat;
     background-size:cover;
     background-position: center center;
@@ -84,6 +84,10 @@ html{
     padding-left: 90px ;
  
 }
+
+.lapTimes {
+    display: none;
+  }
 
 
 
