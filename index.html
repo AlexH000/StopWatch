@@ -1,96 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Stop Watch</title>
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <div class="container">
-            <div class="timerDisplay">
-                00 : 00 : 00 : 000
-            </div>
-            <div class="buttons">
-                <button id="pauseTimer">Pause</button>
-                <button id="startTimer">Start</button>
-                <button id="resetTimer">Reset</button>
-                <button id="lapTimer">Lap</button>
-            </div>
-            <div class="lapTimes">
-                <h3>Lap Times:</h3>
-                <ul id="lapList"></ul>
-            </div>
-            <audio id="timerSound" src="naruto-run-By-tuna.voicemod.net.mp3"></audio>
-        </div>  
-         
-    </body>
-    
-    
-    <script>
-        let [milliseconds,seconds,minutes,hours] = [0,0,0,0];
-        let timerRef = document.querySelector('.timerDisplay');
-        let int = null;
-        let lapListRef = document.getElementById('lapList');
-        let lapCount = 0;
-        let timerSound = document.getElementById('timerSound');
-    
-        document.getElementById('startTimer').addEventListener('click', ()=>{
-            if(int !== null){
-                clearInterval(int);
-            }
-            int = setInterval(displayTimer,10);
-            timerSound.play();
-        });
-    
-        document.getElementById('pauseTimer').addEventListener('click', ()=>{
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stop Watch</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto+Mono:wght@700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="timerDisplay">00 : 00 : 00 : 000</div>
+        <div class="buttons">
+            <button id="pauseTimer">Pause</button>
+            <button id="startTimer">Start</button>
+            <button id="resetTimer">Reset</button>
+            <button id="lapTimer">Lap</button>
+        </div>
+        <div class="lapTimes">
+            <h3>Lap Times:</h3>
+            <ul id="lapList"></ul>
+        </div>
+        <audio id="timerSound" src="naruto-run-By-tuna.voicemod.net.mp3"></audio>
+        <audio id="pauseSound" src="naruto-sad-music-instant.mp3"></audio>
+    </div>
+</body>
+
+<script>
+    let [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
+    let timerRef = document.querySelector(".timerDisplay");
+    let int = null;
+    let lapListRef = document.getElementById("lapList");
+    let lapCount = 0;
+    let timerSound = document.getElementById("timerSound");
+    let pauseSound = document.getElementById("pauseSound");
+
+    document.getElementById("startTimer").addEventListener("click", () => {
+        if (int !== null) {
             clearInterval(int);
-            timerSound.pause();
-        });
-    
-        document.getElementById('resetTimer').addEventListener('click', ()=>{
-            clearInterval(int);
-            [milliseconds,seconds,minutes,hours] = [0,0,0,0];
-            timerRef.innerHTML = '00 : 00 : 00 : 000 ';
-            lapCount = 0;
-            lapListRef.innerHTML = '';
-            timerSound.pause();
-            timerSound.currentTime = 0;
-        });
-    
-        document.getElementById('lapTimer').addEventListener('click', ()=>{
-            let lapTime = `${padZero(hours)} : ${padZero(minutes)} : ${padZero(seconds)} : ${padZero(milliseconds)}`;
+        }
+        int = setInterval(displayTimer, 10);
+        timerSound.play();
+    });
+
+    document.getElementById("pauseTimer").addEventListener("click", () => {
+        clearInterval(int);
+        timerSound.pause();
+        pauseSound.play();
+    });
+
+    document.getElementById("resetTimer").addEventListener("click", () => {
+        clearInterval(int);
+        [milliseconds, seconds, minutes, hours] = [0, 0, 0, 0];
+        timerRef.innerHTML = "00 : 00 : 00 : 000 ";
+        lapCount = 0;
+        lapListRef.innerHTML = "";
+        timerSound.pause();
+        timerSound.currentTime = 0;
+    });
+
+    document.getElementById("lapTimer").addEventListener("click", () => {
+        // Only record lap time if timer has been running for at least 1 millisecond
+        if (milliseconds > 0 || seconds > 0 || minutes > 0 || hours > 0) {
+            let lapTime = `${padZero(hours)} : ${padZero(minutes)} : ${padZero(
+                seconds
+            )} : ${padZero(milliseconds)}`;
             lapCount++;
-            let lapItem = document.createElement('li');
+            let lapItem = document.createElement("li");
             lapItem.innerHTML = `Lap ${lapCount}: ${lapTime}`;
             lapListRef.appendChild(lapItem);
-        });
-    
-        function displayTimer(){
-            milliseconds+=10;
-            if(milliseconds == 1000){
-                milliseconds = 0;
-                seconds++;
-                if(seconds == 60){
-                    seconds = 0;
-                    minutes++;
-                    if(minutes == 60){
-                        minutes = 0;
-                        hours++;
-                    }
+
+            // Show lap times if not already shown
+            if (lapCount === 1) {
+                document.querySelector(".lapTimes").style.display = "block";
+            }
+        }
+    });
+
+    function displayTimer() {
+        milliseconds += 10;
+        if (milliseconds == 1000) {
+            milliseconds = 0;
+            seconds++;
+            if (seconds == 60) {
+                seconds = 0;
+                minutes++;
+                if (minutes == 60) {
+                    minutes = 0;
+                    hours++;
                 }
             }
-            timerRef.innerHTML = ` ${padZero(hours)} : ${padZero(minutes)} : ${padZero(seconds)} : ${padZero(milliseconds)}`;
         }
-    
-        function padZero(num){
-            return num < 10 ? "0" + num : num;
-        }
-    </script>
-    </html>
+        timerRef.innerHTML = ` ${padZero(hours)} : ${padZero(
+            minutes
+        )} : ${padZero(seconds)} : ${padZero(milliseconds)}`;
+    }
+
+    function padZero(num) {
+        return num < 10 ? "0" + num : num;
+    }
+</script>
+
+</html>
 
 
 
